@@ -120,3 +120,91 @@ Feature: Gestão de produtos via API
     Given que possuo dados de produto com tipos inválidos
     When envio uma requisição POST para /produtos
     Then o sistema deve retornar status 400
+
+
+  # ==================================================
+  # GET /produtos - Listagem
+  # ==================================================
+
+
+  # CENÁRIOS POSITIVOS
+
+
+  Scenario: Listar todos os produtos com sucesso
+    Given que existem produtos cadastrados no sistema
+    When envio uma requisição GET para /produtos
+    Then o sistema deve retornar status 200
+    And deve retornar a lista de produtos
+    And deve retornar a quantidade total de registros
+
+
+  Scenario: Filtrar produtos por nome
+    Given que existem produtos cadastrados com nomes diferentes
+    When envio uma requisição GET para /produtos com filtro de nome
+    Then o sistema deve retornar status 200
+    And deve retornar apenas os produtos com o nome informado
+
+
+  Scenario: Filtrar produtos por preço
+    Given que existem produtos cadastrados com preços diferentes
+    When envio uma requisição GET para /produtos com filtro de preço
+    Then o sistema deve retornar status 200
+    And deve retornar apenas os produtos com o preço informado
+
+
+  Scenario: Filtrar produtos por descrição
+    Given que existem produtos cadastrados com descrições diferentes
+    When envio uma requisição GET para /produtos com filtro de descrição
+    Then o sistema deve retornar status 200
+    And deve retornar apenas os produtos com a descrição informada
+
+
+  Scenario: Filtrar produtos por quantidade
+    Given que existem produtos cadastrados com quantidades diferentes
+    When envio uma requisição GET para /produtos com filtro de quantidade
+    Then o sistema deve retornar status 200
+    And deve retornar apenas os produtos com a quantidade informada
+
+
+
+  # CENÁRIOS DE CONSULTA SEM RESULTADO
+
+
+  Scenario: Buscar produtos com filtros inexistentes
+    Given que não existem produtos com os dados informados
+    When envio uma requisição GET para /produtos com filtros inválidos
+    Then o sistema deve retornar status 200
+    And deve retornar uma lista vazia
+
+
+
+  # ==================================================
+  # GET /produtos/{id} - Consulta por ID
+  # ==================================================
+
+
+  # CENÁRIOS POSITIVOS
+
+
+  Scenario: Buscar produto por ID válido
+    Given que existe um produto cadastrado com um ID válido
+    When envio uma requisição GET para /produtos/{id}
+    Then o sistema deve retornar status 200
+    And deve retornar os dados do produto correspondente
+
+
+
+  # CENÁRIOS NEGATIVOS
+
+
+  Scenario: Buscar produto com ID inexistente
+    Given que informo um ID de produto inexistente
+    When envio uma requisição GET para /produtos/{id}
+    Then o sistema deve retornar status 400
+    And deve exibir a mensagem "Produto não encontrado"
+
+
+  Scenario: Buscar produto com ID inválido
+    Given que informo um ID de produto inválido
+    When envio uma requisição GET para /produtos/{id}
+    Then o sistema deve retornar status 400
