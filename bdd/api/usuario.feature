@@ -116,3 +116,84 @@ Feature: Gestão de usuários via API
     Given que possuo dados de usuário com senha inválida
     When envio uma requisição POST para /usuarios
     Then o sistema deve retornar status 400
+
+
+  # ==================================================
+  # GET /usuarios - Listagem
+  # ==================================================
+
+
+  # CENÁRIOS POSITIVOS
+
+
+  Scenario: Listar todos os usuários com sucesso
+    Given que existem usuários cadastrados no sistema
+    When envio uma requisição GET para /usuarios
+    Then o sistema deve retornar status 200
+    And deve retornar a lista de usuários
+    And deve retornar a quantidade total de registros
+
+
+  Scenario: Filtrar usuários por nome
+    Given que existem usuários cadastrados com nomes diferentes
+    When envio uma requisição GET para /usuarios com filtro de nome
+    Then o sistema deve retornar status 200
+    And deve retornar apenas os usuários com o nome informado
+
+
+  Scenario: Filtrar usuários por email
+    Given que existe um usuário cadastrado com email específico
+    When envio uma requisição GET para /usuarios com filtro de email
+    Then o sistema deve retornar status 200
+    And deve retornar apenas o usuário correspondente
+
+
+  Scenario: Filtrar usuários por perfil administrador
+    Given que existem usuários administradores e não administradores cadastrados
+    When envio uma requisição GET para /usuarios com filtro administrador
+    Then o sistema deve retornar status 200
+    And deve retornar apenas os usuários conforme o perfil informado
+
+
+
+  # CENÁRIOS DE CONSULTA COM FILTROS INVÁLIDOS
+
+
+  Scenario: Buscar usuários com filtro inexistente
+    Given que não existem usuários com os dados informados
+    When envio uma requisição GET para /usuarios com filtros inválidos
+    Then o sistema deve retornar status 200
+    And deve retornar uma lista vazia
+
+
+
+  # ==================================================
+  # GET /usuarios/{id} - Consulta por ID
+  # ==================================================
+
+
+  # CENÁRIOS POSITIVOS
+
+
+  Scenario: Buscar usuário por ID válido
+    Given que existe um usuário cadastrado com um ID válido
+    When envio uma requisição GET para /usuarios/{id}
+    Then o sistema deve retornar status 200
+    And deve retornar os dados do usuário correspondente
+
+
+
+  # CENÁRIOS NEGATIVOS
+
+
+  Scenario: Buscar usuário com ID inexistente
+    Given que informo um ID de usuário inexistente
+    When envio uma requisição GET para /usuarios/{id}
+    Then o sistema deve retornar status 400
+    And deve exibir a mensagem "Usuário não encontrado"
+
+
+  Scenario: Buscar usuário com ID inválido
+    Given que informo um ID de usuário inválido
+    When envio uma requisição GET para /usuarios/{id}
+    Then o sistema deve retornar status 400
