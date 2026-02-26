@@ -208,3 +208,123 @@ Feature: Gestão de produtos via API
     Given que informo um ID de produto inválido
     When envio uma requisição GET para /produtos/{id}
     Then o sistema deve retornar status 400
+
+
+
+  # ==================================================
+  # PUT /produtos/{id} - Atualização
+  # ==================================================
+
+
+  # CENÁRIOS POSITIVOS
+
+
+  Scenario: Atualizar produto com sucesso como administrador
+    Given que estou autenticado como usuário administrador
+    And que existe um produto cadastrado com um ID válido
+    And que possuo dados atualizados válidos do produto
+    When envio uma requisição PUT para /produtos/{id}
+    Then o sistema deve retornar status 200
+    And deve exibir a mensagem "Registro alterado com sucesso"
+
+
+
+  # CENÁRIOS DE COMPORTAMENTO DO SISTEMA
+
+
+  Scenario: Atualizar produto com ID inexistente deve realizar novo cadastro
+    Given que estou autenticado como usuário administrador
+    And que informo um ID de produto inexistente
+    And que possuo dados válidos para cadastro
+    When envio uma requisição PUT para /produtos/{id}
+    Then o sistema deve retornar status 201
+    And deve exibir a mensagem "Cadastro realizado com sucesso"
+    And deve retornar o id do novo produto
+
+
+
+  # CENÁRIOS DE NEGÓCIO
+
+
+  Scenario: Não permitir atualização com nome já utilizado
+    Given que estou autenticado como usuário administrador
+    And que existem dois produtos cadastrados com nomes diferentes
+    And que tento atualizar um produto com nome já utilizado
+    When envio uma requisição PUT para /produtos/{id}
+    Then o sistema deve retornar status 400
+    And deve exibir a mensagem "Já existe produto com esse nome"
+
+
+
+  # CENÁRIOS DE AUTORIZAÇÃO
+
+
+  Scenario: Não permitir atualização sem token
+    Given que não possuo token de autenticação
+    When envio uma requisição PUT para /produtos/{id}
+    Then o sistema deve retornar status 401
+    And deve exibir mensagem de token inválido
+
+
+  Scenario: Não permitir atualização com token inválido
+    Given que possuo um token inválido
+    When envio uma requisição PUT para /produtos/{id}
+    Then o sistema deve retornar status 401
+    And deve exibir mensagem de token inválido
+
+
+  Scenario: Não permitir atualização com token expirado
+    Given que possuo um token expirado
+    When envio uma requisição PUT para /produtos/{id}
+    Then o sistema deve retornar status 401
+    And deve exibir mensagem de token inválido
+
+
+
+  # CENÁRIOS DE PERMISSÃO
+
+
+  Scenario: Não permitir atualização por usuário não administrador
+    Given que estou autenticado como usuário não administrador
+    And que existe um produto cadastrado
+    When envio uma requisição PUT para /produtos/{id}
+    Then o sistema deve retornar status 403
+    And deve exibir a mensagem "Rota exclusiva para administradores"
+
+
+
+  # CENÁRIOS DE VALIDAÇÃO
+
+
+  Scenario: Não permitir atualização sem informar nome
+    Given que possuo dados de produto sem o campo nome
+    When envio uma requisição PUT para /produtos/{id}
+    Then o sistema deve retornar status 400
+
+
+  Scenario: Não permitir atualização com preço negativo
+    Given que possuo dados de produto com preço negativo
+    When envio uma requisição PUT para /produtos/{id}
+    Then o sistema deve retornar status 400
+
+
+  Scenario: Não permitir atualização com quantidade negativa
+    Given que possuo dados de produto com quantidade negativa
+    When envio uma requisição PUT para /produtos/{id}
+    Then o sistema deve retornar status 400
+
+
+
+  # CENÁRIOS DE PAYLOAD INVÁLIDO
+
+
+  Scenario: Não permitir atualização com corpo vazio
+    Given que envio uma requisição PUT para /produtos/{id} sem corpo
+    When envio a requisição
+    Then o sistema deve retornar status 400
+
+
+  Scenario: Não permitir atualização com campos nulos
+    Given que possuo dados de produto com campos nulos
+    When envio uma requisição PUT para /produtos/{id}
+    Then o sistema deve retornar status 400
