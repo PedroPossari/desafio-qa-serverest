@@ -328,3 +328,94 @@ Feature: Gestão de produtos via API
     Given que possuo dados de produto com campos nulos
     When envio uma requisição PUT para /produtos/{id}
     Then o sistema deve retornar status 400
+
+
+
+  # ==================================================
+  # DELETE /produtos/{id} - Exclusão
+  # ==================================================
+
+
+  # CENÁRIOS POSITIVOS
+
+
+  Scenario: Excluir produto com sucesso como administrador
+    Given que estou autenticado como usuário administrador
+    And que existe um produto cadastrado sem vínculo com carrinho
+    When envio uma requisição DELETE para /produtos/{id}
+    Then o sistema deve retornar status 200
+    And deve exibir a mensagem "Registro excluído com sucesso"
+
+
+  Scenario: Tentar excluir produto já removido
+    Given que informo o ID de um produto já excluído
+    When envio uma requisição DELETE para /produtos/{id}
+    Then o sistema deve retornar status 200
+    And deve exibir a mensagem "Nenhum registro excluído"
+
+
+
+  # CENÁRIOS DE NEGÓCIO
+
+
+  Scenario: Não permitir exclusão de produto vinculado a carrinho
+    Given que estou autenticado como usuário administrador
+    And que existe um produto vinculado a um carrinho ativo
+    When envio uma requisição DELETE para /produtos/{id}
+    Then o sistema deve retornar status 400
+    And deve exibir a mensagem "Não é permitido excluir produto que faz parte de carrinho"
+    And deve retornar os ids dos carrinhos associados
+
+
+
+  # CENÁRIOS DE AUTORIZAÇÃO
+
+
+  Scenario: Não permitir exclusão sem token
+    Given que não possuo token de autenticação
+    When envio uma requisição DELETE para /produtos/{id}
+    Then o sistema deve retornar status 401
+    And deve exibir mensagem de token inválido
+
+
+  Scenario: Não permitir exclusão com token inválido
+    Given que possuo um token inválido
+    When envio uma requisição DELETE para /produtos/{id}
+    Then o sistema deve retornar status 401
+    And deve exibir mensagem de token inválido
+
+
+  Scenario: Não permitir exclusão com token expirado
+    Given que possuo um token expirado
+    When envio uma requisição DELETE para /produtos/{id}
+    Then o sistema deve retornar status 401
+    And deve exibir mensagem de token inválido
+
+
+
+  # CENÁRIOS DE PERMISSÃO
+
+
+  Scenario: Não permitir exclusão por usuário não administrador
+    Given que estou autenticado como usuário não administrador
+    And que existe um produto cadastrado
+    When envio uma requisição DELETE para /produtos/{id}
+    Then o sistema deve retornar status 403
+    And deve exibir a mensagem "Rota exclusiva para administradores"
+
+
+
+  # CENÁRIOS NEGATIVOS
+
+
+  Scenario: Tentar excluir produto com ID inexistente
+    Given que informo um ID de produto inexistente
+    When envio uma requisição DELETE para /produtos/{id}
+    Then o sistema deve retornar status 200
+    And deve exibir a mensagem "Nenhum registro excluído"
+
+
+  Scenario: Tentar excluir produto com ID inválido
+    Given que informo um ID de produto inválido
+    When envio uma requisição DELETE para /produtos/{id}
+    Then o sistema deve retornar status 400
