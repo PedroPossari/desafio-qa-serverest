@@ -279,3 +279,55 @@ Feature: Gestão de usuários via API
     Given que possuo dados de usuário com campos nulos
     When envio uma requisição PUT para /usuarios/{id}
     Then o sistema deve retornar status 400
+
+
+
+  # ==================================================
+  # DELETE /usuarios/{id} - Exclusão
+  # ==================================================
+
+
+  # CENÁRIOS - POSITIVOS
+
+
+  Scenario: Excluir usuário com sucesso
+    Given que existe um usuário cadastrado sem carrinho associado
+    When envio uma requisição DELETE para /usuarios/{id}
+    Then o sistema deve retornar status 200
+    And deve exibir a mensagem "Registro excluído com sucesso"
+
+
+  Scenario: Tentar excluir usuário já removido
+    Given que informo o ID de um usuário já excluído
+    When envio uma requisição DELETE para /usuarios/{id}
+    Then o sistema deve retornar status 200
+    And deve exibir a mensagem "Nenhum registro excluído"
+
+
+
+  # CENÁRIOS - NEGÓCIO / REGRAS
+
+
+  Scenario: Não permitir exclusão de usuário com carrinho cadastrado
+    Given que existe um usuário com carrinho ativo no sistema
+    When envio uma requisição DELETE para /usuarios/{id}
+    Then o sistema deve retornar status 400
+    And deve exibir a mensagem "Não é permitido excluir usuário com carrinho cadastrado"
+    And deve retornar o id do carrinho associado
+
+
+
+  # CENÁRIOS - NEGATIVOS
+
+
+  Scenario: Tentar excluir usuário com ID inexistente
+    Given que informo um ID de usuário inexistente
+    When envio uma requisição DELETE para /usuarios/{id}
+    Then o sistema deve retornar status 200
+    And deve exibir a mensagem "Nenhum registro excluído"
+
+
+  Scenario: Tentar excluir usuário com ID inválido
+    Given que informo um ID de usuário inválido
+    When envio uma requisição DELETE para /usuarios/{id}
+    Then o sistema deve retornar status 400
