@@ -123,7 +123,7 @@ Feature: Gestão de usuários via API
   # ==================================================
 
 
-  # CENÁRIOS POSITIVOS
+  # CENÁRIOS - POSITIVOS
 
 
   Scenario: Listar todos os usuários com sucesso
@@ -156,7 +156,7 @@ Feature: Gestão de usuários via API
 
 
 
-  # CENÁRIOS DE CONSULTA COM FILTROS INVÁLIDOS
+  # CENÁRIOS - CONSULTA COM FILTROS INVÁLIDOS
 
 
   Scenario: Buscar usuários com filtro inexistente
@@ -172,7 +172,7 @@ Feature: Gestão de usuários via API
   # ==================================================
 
 
-  # CENÁRIOS POSITIVOS
+  # CENÁRIOS - POSITIVOS
 
 
   Scenario: Buscar usuário por ID válido
@@ -183,7 +183,7 @@ Feature: Gestão de usuários via API
 
 
 
-  # CENÁRIOS NEGATIVOS
+  # CENÁRIOS - NEGATIVOS
 
 
   Scenario: Buscar usuário com ID inexistente
@@ -196,4 +196,86 @@ Feature: Gestão de usuários via API
   Scenario: Buscar usuário com ID inválido
     Given que informo um ID de usuário inválido
     When envio uma requisição GET para /usuarios/{id}
+    Then o sistema deve retornar status 400
+
+
+
+  # ==================================================
+  # PUT /usuarios/{id} - Atualização
+  # ==================================================
+
+
+  # CENÁRIOS - POSITIVOS
+
+
+  Scenario: Atualizar usuário com sucesso
+    Given que existe um usuário cadastrado com um ID válido
+    And que possuo dados atualizados válidos
+    When envio uma requisição PUT para /usuarios/{id}
+    Then o sistema deve retornar status 200
+    And deve exibir a mensagem "Registro alterado com sucesso"
+
+
+  Scenario: Atualizar usuário alterando perfil para administrador
+    Given que existe um usuário cadastrado como usuário comum
+    And que possuo dados para torná-lo administrador
+    When envio uma requisição PUT para /usuarios/{id}
+    Then o sistema deve retornar status 200
+    And deve exibir a mensagem "Registro alterado com sucesso"
+
+
+
+  # CENÁRIOS - NEGÓCIO / REGRAS
+
+
+  Scenario: Não permitir atualização com email já utilizado
+    Given que existem dois usuários cadastrados com emails diferentes
+    And que tento atualizar um usuário com email já utilizado
+    When envio uma requisição PUT para /usuarios/{id}
+    Then o sistema deve retornar status 400
+    And deve exibir a mensagem "Este email já está sendo usado"
+
+
+
+  # CENÁRIOS - COMPORTAMENTO DO SISTEMA
+
+
+  Scenario: Atualizar usuário com ID inexistente deve realizar novo cadastro
+    Given que informo um ID de usuário inexistente
+    And que possuo dados válidos para cadastro
+    When envio uma requisição PUT para /usuarios/{id}
+    Then o sistema deve retornar status 201
+    And deve exibir a mensagem "Cadastro realizado com sucesso"
+    And deve retornar o id do novo usuário
+
+
+
+  # CENÁRIOS - VALIDAÇÃO
+
+
+  Scenario: Não permitir atualização com email inválido
+    Given que possuo dados de usuário com email inválido
+    When envio uma requisição PUT para /usuarios/{id}
+    Then o sistema deve retornar status 400
+
+
+  Scenario: Não permitir atualização com campos obrigatórios vazios
+    Given que possuo dados de usuário com campos obrigatórios vazios
+    When envio uma requisição PUT para /usuarios/{id}
+    Then o sistema deve retornar status 400
+
+
+
+  # CENÁRIOS - PAYLOAD INVÁLIDO
+
+
+  Scenario: Não permitir atualização com corpo da requisição vazio
+    Given que envio uma requisição PUT para /usuarios/{id} sem corpo
+    When envio a requisição
+    Then o sistema deve retornar status 400
+
+
+  Scenario: Não permitir atualização com campos nulos
+    Given que possuo dados de usuário com campos nulos
+    When envio uma requisição PUT para /usuarios/{id}
     Then o sistema deve retornar status 400
