@@ -136,4 +136,86 @@ describe('Gestão de usuários - API', () => {
         });
     });
   });
+  // ==================================================
+  // GET /usuarios
+  // ==================================================
+  describe('GET /usuarios', () => {
+    it('Listar todos os usuários com sucesso', () => {
+      usuariosService.listarUsuarios().then((res) => {
+        expect(res.status).to.eq(200);
+        expect(res.body).to.have.property('quantidade');
+        expect(res.body.usuarios).to.be.an('array');
+      });
+    });
+
+    it('Filtrar usuários por nome', () => {
+      usuariosService.criarUsuario(usuarioBase).then((res) => {
+        usuariosCriados.push(res.body._id);
+        usuariosService.listarUsuarios(`?nome=${usuarioBase.nome}`).then((response) => {
+          expect(response.status).to.eq(200);
+          expect(response.body.usuarios[0].nome).to.eq(usuarioBase.nome);
+        });
+      });
+    });
+
+    it('Filtrar usuários por email', () => {
+      usuariosService.criarUsuario(usuarioBase).then((res) => {
+        usuariosCriados.push(res.body._id);
+        usuariosService.listarUsuarios(`?email=${usuarioBase.email}`).then((response) => {
+          expect(response.status).to.eq(200);
+          expect(response.body.usuarios[0].email).to.eq(usuarioBase.email);
+        });
+      });
+    });
+
+    it('Filtrar usuários por perfil administrador', () => {
+      const admin = usuarioFactory.usuarioAdmin();
+      usuariosService.criarUsuario(admin).then((res) => {
+        usuariosCriados.push(res.body._id);
+        usuariosService.listarUsuarios('?administrador=true').then((response) => {
+          expect(response.status).to.eq(200);
+          expect(response.body.usuarios.some((u) => u.administrador === 'true')).to.be.true;
+        });
+      });
+    });
+
+    it('Buscar usuários com filtro inexistente', () => {
+      usuariosService.listarUsuarios('?nome=naoexiste123').then((res) => {
+        expect(res.status).to.eq(200);
+        expect(res.body.quantidade).to.eq(0);
+        expect(res.body.usuarios).to.be.empty;
+      });
+    });
+  });
+
+  // ==================================================
+  // GET /usuarios/{id}
+  // ==================================================
+  describe('GET /usuarios/{id}', () => {
+    it('Buscar usuário por ID válido', () => {
+      usuariosService.criarUsuario(usuarioBase).then((res) => {
+        const id = res.body._id;
+        usuariosCriados.push(id);
+        usuariosService.buscarUsuarioPorId(id).then((response) => {
+          expect(response.status).to.eq(200);
+          expect(response.body._id).to.eq(id);
+          expect(response.body.nome).to.eq(usuarioBase.nome);
+          expect(response.body.email).to.eq(usuarioBase.email);
+        });
+      });
+    });
+
+    it('Buscar usuário com ID inexistente', () => {
+      usuariosService.buscarUsuarioPorId('999999999999').then((res) => {
+        expect(res.status).to.eq(400);
+        expect(res.body.message).to.eq('Usuário não encontrado');
+      });
+    });
+
+    it('Buscar usuário com ID inválido', () => {
+      usuariosService.buscarUsuarioPorId('idInvalido123').then((res) => {
+        expect(res.status).to.eq(400);
+      });
+    });
+  });
 });
