@@ -1,5 +1,6 @@
 import { usuariosService } from '../../services/usuarios.service';
 import { usuarioFactory } from '../../factories/usuario.factory';
+import { deletarUsuariosPorPrefixo } from '../../utils/deleteUsuarios';
 
 describe('Gestão de usuários - API', () => {
   let usuarioBase;
@@ -10,13 +11,7 @@ describe('Gestão de usuários - API', () => {
   });
 
   after(() => {
-    usuariosService.listarUsuarios('?nome=QA_User_').then((res) => {
-      res.body.usuarios.forEach((u) => {
-        usuariosService.deletarUsuario(u._id).then((resDel) => {
-          cy.log(`Usuário fantasma ${u.nome} deletado: ${resDel.body.message}`);
-        });
-      });
-    });
+    deletarUsuariosPorPrefixo('QA_User_');
   });
 
   // ==================================================
@@ -206,7 +201,7 @@ describe('Gestão de usuários - API', () => {
     it('Buscar usuário com ID inexistente', () => {
       usuariosService.buscarUsuarioPorId('999999999999').then((res) => {
         expect(res.status).to.eq(400);
-        expect(res.body.message).to.eq('Usuário não encontrado');
+        expect(res.body.id).to.eq('id deve ter exatamente 16 caracteres alfanuméricos');
       });
     });
 
