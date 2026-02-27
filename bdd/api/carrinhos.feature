@@ -126,3 +126,85 @@ Feature: Gestão de carrinhos via API
     Given que informo dados de produtos com tipos inválidos
     When envio uma requisição POST para /carrinhos
     Then o sistema deve retornar status 400
+
+
+
+  # ==================================================
+  # GET /carrinhos - Listagem
+  # ==================================================
+
+
+  # CENÁRIOS - POSITIVOS
+
+
+  Scenario: Listar todos os carrinhos com sucesso
+    Given que existem carrinhos cadastrados no sistema
+    When envio uma requisição GET para /carrinhos
+    Then o sistema deve retornar status 200
+    And deve retornar a lista de carrinhos
+    And deve retornar a quantidade total de registros
+
+
+  Scenario: Filtrar carrinhos por usuário
+    Given que existem carrinhos cadastrados para usuários diferentes
+    When envio uma requisição GET para /carrinhos com filtro de idUsuario
+    Then o sistema deve retornar status 200
+    And deve retornar apenas os carrinhos do usuário informado
+
+
+  Scenario: Filtrar carrinhos por preço total
+    Given que existem carrinhos cadastrados com valores diferentes
+    When envio uma requisição GET para /carrinhos com filtro de precoTotal
+    Then o sistema deve retornar status 200
+    And deve retornar apenas os carrinhos com o preço informado
+
+
+  Scenario: Filtrar carrinhos por quantidade total
+    Given que existem carrinhos cadastrados com quantidades diferentes
+    When envio uma requisição GET para /carrinhos com filtro de quantidadeTotal
+    Then o sistema deve retornar status 200
+    And deve retornar apenas os carrinhos com a quantidade informada
+
+
+
+  # CENÁRIOS - CONSULTA SEM RESULTADO
+
+
+  Scenario: Buscar carrinhos com filtros inexistentes
+    Given que não existem carrinhos com os dados informados
+    When envio uma requisição GET para /carrinhos com filtros inválidos
+    Then o sistema deve retornar status 200
+    And deve retornar uma lista vazia
+
+
+
+  # ==================================================
+  # GET /carrinhos/{id} - Consulta por ID
+  # ==================================================
+
+
+  # CENÁRIOS - POSITIVOS
+
+
+  Scenario: Buscar carrinho por ID válido
+    Given que existe um carrinho cadastrado com um ID válido
+    When envio uma requisição GET para /carrinhos/{id}
+    Then o sistema deve retornar status 200
+    And deve retornar os dados do carrinho correspondente
+
+
+
+  # CENÁRIOS - NEGATIVOS
+
+
+  Scenario: Buscar carrinho com ID inexistente
+    Given que informo um ID de carrinho inexistente
+    When envio uma requisição GET para /carrinhos/{id}
+    Then o sistema deve retornar status 400
+    And deve exibir a mensagem "Carrinho não encontrado"
+
+
+  Scenario: Buscar carrinho com ID inválido
+    Given que informo um ID de carrinho inválido
+    When envio uma requisição GET para /carrinhos/{id}
+    Then o sistema deve retornar status 400
