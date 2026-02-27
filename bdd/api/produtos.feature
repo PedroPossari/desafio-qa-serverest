@@ -6,7 +6,7 @@ Feature: Gestão de produtos via API
   # ==================================================
 
 
-  # CENÁRIOS POSITIVOS
+  # CENÁRIOS - POSITIVOS
 
 
   Scenario: Cadastrar produto com sucesso como administrador
@@ -19,7 +19,7 @@ Feature: Gestão de produtos via API
 
 
 
-  # CENÁRIOS DE AUTORIZAÇÃO
+  # CENÁRIOS - AUTORIZAÇÃO
 
 
   Scenario: Não permitir cadastro sem token
@@ -44,7 +44,7 @@ Feature: Gestão de produtos via API
 
 
 
-  # CENÁRIOS DE PERMISSÃO
+  # CENÁRIOS - PERMISSÃO
 
 
   Scenario: Não permitir cadastro por usuário não administrador
@@ -56,7 +56,7 @@ Feature: Gestão de produtos via API
 
 
 
-  # CENÁRIOS DE DUPLICIDADE
+  # CENÁRIOS - DUPLICIDADE
 
 
   Scenario: Não permitir cadastro de produto com nome já utilizado
@@ -67,7 +67,7 @@ Feature: Gestão de produtos via API
 
 
 
-  # CENÁRIOS DE VALIDAÇÃO
+  # CENÁRIOS - VALIDAÇÃO
 
 
   Scenario: Não permitir cadastro sem informar nome
@@ -101,7 +101,7 @@ Feature: Gestão de produtos via API
 
 
 
-  # CENÁRIOS DE PAYLOAD INVÁLIDO
+  # CENÁRIOS - PAYLOAD INVÁLIDO
 
 
   Scenario: Não permitir cadastro com corpo da requisição vazio
@@ -127,7 +127,7 @@ Feature: Gestão de produtos via API
   # ==================================================
 
 
-  # CENÁRIOS POSITIVOS
+  # CENÁRIOS - POSITIVOS
 
 
   Scenario: Listar todos os produtos com sucesso
@@ -167,7 +167,7 @@ Feature: Gestão de produtos via API
 
 
 
-  # CENÁRIOS DE CONSULTA SEM RESULTADO
+  # CENÁRIOS - CONSULTA SEM RESULTADO
 
 
   Scenario: Buscar produtos com filtros inexistentes
@@ -183,7 +183,7 @@ Feature: Gestão de produtos via API
   # ==================================================
 
 
-  # CENÁRIOS POSITIVOS
+  # CENÁRIOS - POSITIVOS
 
 
   Scenario: Buscar produto por ID válido
@@ -194,7 +194,7 @@ Feature: Gestão de produtos via API
 
 
 
-  # CENÁRIOS NEGATIVOS
+  # CENÁRIOS - NEGATIVOS
 
 
   Scenario: Buscar produto com ID inexistente
@@ -216,7 +216,7 @@ Feature: Gestão de produtos via API
   # ==================================================
 
 
-  # CENÁRIOS POSITIVOS
+  # CENÁRIOS - POSITIVOS
 
 
   Scenario: Atualizar produto com sucesso como administrador
@@ -229,7 +229,7 @@ Feature: Gestão de produtos via API
 
 
 
-  # CENÁRIOS DE COMPORTAMENTO DO SISTEMA
+  # CENÁRIOS - COMPORTAMENTO DO SISTEMA
 
 
   Scenario: Atualizar produto com ID inexistente deve realizar novo cadastro
@@ -243,7 +243,7 @@ Feature: Gestão de produtos via API
 
 
 
-  # CENÁRIOS DE NEGÓCIO
+  # CENÁRIOS - NEGÓCIO
 
 
   Scenario: Não permitir atualização com nome já utilizado
@@ -256,7 +256,7 @@ Feature: Gestão de produtos via API
 
 
 
-  # CENÁRIOS DE AUTORIZAÇÃO
+  # CENÁRIOS - AUTORIZAÇÃO
 
 
   Scenario: Não permitir atualização sem token
@@ -281,7 +281,7 @@ Feature: Gestão de produtos via API
 
 
 
-  # CENÁRIOS DE PERMISSÃO
+  # CENÁRIOS - PERMISSÃO
 
 
   Scenario: Não permitir atualização por usuário não administrador
@@ -293,7 +293,7 @@ Feature: Gestão de produtos via API
 
 
 
-  # CENÁRIOS DE VALIDAÇÃO
+  # CENÁRIOS - VALIDAÇÃO
 
 
   Scenario: Não permitir atualização sem informar nome
@@ -315,7 +315,7 @@ Feature: Gestão de produtos via API
 
 
 
-  # CENÁRIOS DE PAYLOAD INVÁLIDO
+  # CENÁRIOS - PAYLOAD INVÁLIDO
 
 
   Scenario: Não permitir atualização com corpo vazio
@@ -336,7 +336,7 @@ Feature: Gestão de produtos via API
   # ==================================================
 
 
-  # CENÁRIOS POSITIVOS
+  # CENÁRIOS - POSITIVOS
 
 
   Scenario: Excluir produto com sucesso como administrador
@@ -355,7 +355,7 @@ Feature: Gestão de produtos via API
 
 
 
-  # CENÁRIOS DE NEGÓCIO
+  # CENÁRIOS - NEGÓCIO
 
 
   Scenario: Não permitir exclusão de produto vinculado a carrinho
@@ -368,7 +368,7 @@ Feature: Gestão de produtos via API
 
 
 
-  # CENÁRIOS DE AUTORIZAÇÃO
+  # CENÁRIOS - AUTORIZAÇÃO
 
 
   Scenario: Não permitir exclusão sem token
@@ -393,7 +393,7 @@ Feature: Gestão de produtos via API
 
 
 
-  # CENÁRIOS DE PERMISSÃO
+  # CENÁRIOS - PERMISSÃO
 
 
   Scenario: Não permitir exclusão por usuário não administrador
@@ -405,7 +405,7 @@ Feature: Gestão de produtos via API
 
 
 
-  # CENÁRIOS NEGATIVOS
+  # CENÁRIOS - NEGATIVOS
 
 
   Scenario: Tentar excluir produto com ID inexistente
