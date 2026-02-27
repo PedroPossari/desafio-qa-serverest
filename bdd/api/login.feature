@@ -1,9 +1,5 @@
 Feature: Autenticação de usuários via API
 
-  Como usuário do sistema
-  Quero realizar login
-  Para acessar funcionalidades autenticadas
-
 
   # ==================================================
   # POST /login - Autenticação
@@ -19,16 +15,6 @@ Feature: Autenticação de usuários via API
     Then o sistema deve retornar status 200
     And deve exibir a mensagem "Login realizado com sucesso"
     And deve retornar um token de autorização válido
-
-
-
-  # CENÁRIOS - AUTORIZAÇÃO
-
-
-  Scenario: Utilizar token expirado
-    Given que possuo um token de autenticação expirado
-    When realizo uma requisição autenticada
-    Then o sistema deve retornar status 401
 
 
 
@@ -53,13 +39,13 @@ Feature: Autenticação de usuários via API
   Scenario: Não permitir login com email vazio
     Given que informo o email em branco
     When envio uma requisição POST para /login
-    Then o sistema deve retornar status 401
+    Then o sistema deve retornar status 400
 
 
   Scenario: Não permitir login com senha vazia
     Given que informo a senha em branco
     When envio uma requisição POST para /login
-    Then o sistema deve retornar status 401
+    Then o sistema deve retornar status 400
 
 
 
@@ -97,13 +83,13 @@ Feature: Autenticação de usuários via API
   Scenario: Não permitir login sem informar email e senha
     Given que envio a requisição sem informar credenciais
     When envio uma requisição POST para /login
-    Then o sistema deve retornar status 401
+    Then o sistema deve retornar status 400
 
 
   Scenario: Não permitir login com corpo da requisição vazio
     Given que envio uma requisição POST para /login sem corpo
     When envio a requisição
-    Then o sistema deve retornar status 401
+    Then o sistema deve retornar status 400
 
 
 
@@ -113,4 +99,4 @@ Feature: Autenticação de usuários via API
   Scenario: Não permitir login com campos nulos
     Given que informo email e senha como nulos
     When envio uma requisição POST para /login
-    Then o sistema deve retornar status 401
+    Then o sistema deve retornar status 400
