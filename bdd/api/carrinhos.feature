@@ -208,3 +208,54 @@ Feature: Gestão de carrinhos via API
     Given que informo um ID de carrinho inválido
     When envio uma requisição GET para /carrinhos/{id}
     Then o sistema deve retornar status 400
+
+
+
+  # ==================================================
+  # DELETE /carrinhos/concluir-compra - Finalização
+  # ==================================================
+
+
+  # CENÁRIOS - POSITIVOS
+
+
+  Scenario: Concluir compra com sucesso
+    Given que estou autenticado com um usuário válido
+    And que possuo um carrinho ativo cadastrado
+    When envio uma requisição DELETE para /carrinhos/concluir-compra
+    Then o sistema deve retornar status 200
+    And deve exibir a mensagem "Registro excluído com sucesso"
+    And o carrinho deve ser removido do sistema
+
+
+
+  # CENÁRIOS - NEGÓCIO
+
+
+  Scenario: Tentar concluir compra sem possuir carrinho
+    Given que estou autenticado com um usuário sem carrinho ativo
+    When envio uma requisição DELETE para /carrinhos/concluir-compra
+    Then o sistema deve retornar status 200
+    And deve exibir a mensagem "Não foi encontrado carrinho para esse usuário"
+
+
+
+  # CENÁRIOS - AUTORIZAÇÃO
+
+
+  Scenario: Não permitir concluir compra sem token
+    Given que não possuo token de autenticação
+    When envio uma requisição DELETE para /carrinhos/concluir-compra
+    Then o sistema deve retornar status 401
+
+
+  Scenario: Não permitir concluir compra com token inválido
+    Given que possuo um token inválido
+    When envio uma requisição DELETE para /carrinhos/concluir-compra
+    Then o sistema deve retornar status 401
+
+
+  Scenario: Não permitir concluir compra com token expirado
+    Given que possuo um token expirado
+    When envio uma requisição DELETE para /carrinhos/concluir-compra
+    Then o sistema deve retornar status 401
