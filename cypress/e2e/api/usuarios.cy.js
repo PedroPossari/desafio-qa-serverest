@@ -9,11 +9,14 @@ describe('Gestão de usuários - API', () => {
     usuarioBase = usuarioFactory.usuarioValido();
   });
 
-  afterEach(() => {
-    usuariosCriados.forEach((id) => {
-      usuariosService.deletarUsuario(id);
+  after(() => {
+    usuariosService.listarUsuarios('?nome=QA_User_').then((res) => {
+      res.body.usuarios.forEach((u) => {
+        usuariosService.deletarUsuario(u._id).then((resDel) => {
+          cy.log(`Usuário fantasma ${u.nome} deletado: ${resDel.body.message}`);
+        });
+      });
     });
-    usuariosCriados = [];
   });
 
   // ==================================================
@@ -27,7 +30,6 @@ describe('Gestão de usuários - API', () => {
         expect(res.status).to.eq(201);
         expect(res.body.message).to.eq('Cadastro realizado com sucesso');
         expect(res.body).to.have.property('_id');
-        usuariosCriados.push(res.body._id);
       });
     });
 
@@ -36,7 +38,6 @@ describe('Gestão de usuários - API', () => {
         expect(res.status).to.eq(201);
         expect(res.body.message).to.eq('Cadastro realizado com sucesso');
         expect(res.body).to.have.property('_id');
-        usuariosCriados.push(res.body._id);
       });
     });
 
@@ -150,7 +151,6 @@ describe('Gestão de usuários - API', () => {
 
     it('Filtrar usuários por nome', () => {
       usuariosService.criarUsuario(usuarioBase).then((res) => {
-        usuariosCriados.push(res.body._id);
         usuariosService.listarUsuarios(`?nome=${usuarioBase.nome}`).then((response) => {
           expect(response.status).to.eq(200);
           expect(response.body.usuarios[0].nome).to.eq(usuarioBase.nome);
@@ -160,7 +160,6 @@ describe('Gestão de usuários - API', () => {
 
     it('Filtrar usuários por email', () => {
       usuariosService.criarUsuario(usuarioBase).then((res) => {
-        usuariosCriados.push(res.body._id);
         usuariosService.listarUsuarios(`?email=${usuarioBase.email}`).then((response) => {
           expect(response.status).to.eq(200);
           expect(response.body.usuarios[0].email).to.eq(usuarioBase.email);
@@ -171,7 +170,6 @@ describe('Gestão de usuários - API', () => {
     it('Filtrar usuários por perfil administrador', () => {
       const admin = usuarioFactory.usuarioAdmin();
       usuariosService.criarUsuario(admin).then((res) => {
-        usuariosCriados.push(res.body._id);
         usuariosService.listarUsuarios('?administrador=true').then((response) => {
           expect(response.status).to.eq(200);
           expect(response.body.usuarios.some((u) => u.administrador === 'true')).to.be.true;
@@ -274,7 +272,7 @@ describe('Gestão de usuários - API', () => {
           expect(res.status).to.eq(201);
           expect(res.body.message).to.eq('Cadastro realizado com sucesso');
           expect(res.body).to.have.property('_id');
-          usuariosCriados.push(res.body._id);
+
         });
       });
   
@@ -329,4 +327,45 @@ describe('Gestão de usuários - API', () => {
         });
       });
     });
+    
+  // ==================================================
+  // DELETE /usuarios/{id}
+  // ==================================================
+  describe('DELETE /usuarios/{id}', () => {
+    it('Excluir usuário com sucesso', () => {
+      usuariosService.criarUsuario(usuarioBase).then((res) => {
+        const id = res.body._id;
+        usuariosService.deletarUsuario(id).then((response) => {
+          expect(response.status).to.eq(200);
+          expect(response.body.message).to.eq('Registro excluído com sucesso');
+        });
+      });
+    });
+
+    it('Tentar excluir usuário já removido', () => {
+      usuariosService.criarUsuario(usuarioBase).then((res) => {
+        const id = res.body._id;
+
+        usuariosService.deletarUsuario(id).then(() => {
+          usuariosService.deletarUsuario(id).then((response) => {
+            expect(response.status).to.eq(200);
+            expect(response.body.message).to.eq('Nenhum registro excluído');
+          });
+        });
+      });
+    });
+
+    it('Tentar excluir usuário com ID inexistente', () => {
+      usuariosService.deletarUsuario('999999999999').then((res) => {
+        expect(res.status).to.eq(200);
+        expect(res.body.message).to.eq('Nenhum registro excluído');
+      });
+    });
+
+    it('Tentar excluir usuário com ID inválido', () => {
+      usuariosService.deletarUsuario('idInvalido123').then((res) => {
+        expect(res.status).to.eq(200);
+      });
+    });
+  });
 });
