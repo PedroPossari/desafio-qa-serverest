@@ -218,4 +218,115 @@ describe('Gestão de usuários - API', () => {
       });
     });
   });
+  
+    // ==================================================
+    // PUT /usuarios/{id}
+    // ==================================================
+    describe('PUT /usuarios/{id}', () => {
+      it('Atualizar usuário com sucesso', () => {
+        usuariosService.criarUsuario(usuarioBase).then((res) => {
+          const id = res.body._id;
+          usuariosCriados.push(id);
+  
+          const atualizado = { ...usuarioBase, nome: 'Nome Atualizado' };
+          usuariosService.atualizarUsuario(id, atualizado).then((response) => {
+            expect(response.status).to.eq(200);
+            expect(response.body.message).to.eq('Registro alterado com sucesso');
+          });
+        });
+      });
+  
+      it('Atualizar usuário alterando perfil para administrador', () => {
+        const usuarioComum = usuarioFactory.usuarioComum();
+        usuariosService.criarUsuario(usuarioComum).then((res) => {
+          const id = res.body._id;
+          usuariosCriados.push(id);
+  
+          const atualizado = { ...usuarioComum, administrador: 'true' };
+          usuariosService.atualizarUsuario(id, atualizado).then((response) => {
+            expect(response.status).to.eq(200);
+            expect(response.body.message).to.eq('Registro alterado com sucesso');
+          });
+        });
+      });
+  
+      it('Não permitir atualização com email já utilizado', () => {
+        const usuario1 = usuarioFactory.usuarioValido();
+        const usuario2 = usuarioFactory.usuarioValido();
+  
+        usuariosService.criarUsuario(usuario1).then((res1) => {
+          usuariosCriados.push(res1.body._id);
+          usuariosService.criarUsuario(usuario2).then((res2) => {
+            usuariosCriados.push(res2.body._id);
+  
+            const atualizado = { ...usuario2, email: usuario1.email };
+            usuariosService.atualizarUsuario(res2.body._id, atualizado).then((response) => {
+              expect(response.status).to.eq(400);
+              expect(response.body.message).to.eq('Este email já está sendo usado');
+            });
+          });
+        });
+      });
+  
+      it('Atualizar usuário com ID inexistente deve realizar novo cadastro', () => {
+        const usuario = usuarioFactory.usuarioValido();
+        usuariosService.atualizarUsuario('idNaoExiste', usuario).then((res) => {
+          expect(res.status).to.eq(201);
+          expect(res.body.message).to.eq('Cadastro realizado com sucesso');
+          expect(res.body).to.have.property('_id');
+          usuariosCriados.push(res.body._id);
+        });
+      });
+  
+      it('Não permitir atualização com email inválido', () => {
+        usuariosService.criarUsuario(usuarioBase).then((res) => {
+          const id = res.body._id;
+          usuariosCriados.push(id);
+  
+          const atualizado = { ...usuarioBase, email: 'emailinvalido' };
+          usuariosService.atualizarUsuario(id, atualizado).then((response) => {
+            expect(response.status).to.eq(400);
+          });
+        });
+      });
+  
+      it('Não permitir atualização com campos obrigatórios vazios', () => {
+        usuariosService.criarUsuario(usuarioBase).then((res) => {
+          const id = res.body._id;
+          usuariosCriados.push(id);
+  
+          const atualizado = { ...usuarioBase, nome: '' };
+          usuariosService.atualizarUsuario(id, atualizado).then((response) => {
+            expect(response.status).to.eq(400);
+          });
+        });
+      });
+  
+      it('Não permitir atualização com corpo da requisição vazio', () => {
+        usuariosService.criarUsuario(usuarioBase).then((res) => {
+          const id = res.body._id;
+          usuariosCriados.push(id);
+  
+          cy.request({
+            method: 'PUT',
+            url: `https://serverest.dev/usuarios/${id}`,
+            failOnStatusCode: false,
+          }).then((response) => {
+            expect(response.status).to.eq(400);
+          });
+        });
+      });
+  
+      it('Não permitir atualização com campos nulos', () => {
+        usuariosService.criarUsuario(usuarioBase).then((res) => {
+          const id = res.body._id;
+          usuariosCriados.push(id);
+  
+          usuariosService.atualizarUsuario(id, usuarioFactory.usuarioCamposNulos())
+            .then((response) => {
+              expect(response.status).to.eq(400);
+            });
+        });
+      });
+    });
 });
