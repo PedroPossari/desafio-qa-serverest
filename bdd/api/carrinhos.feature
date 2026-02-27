@@ -259,3 +259,56 @@ Feature: Gestão de carrinhos via API
     Given que possuo um token expirado
     When envio uma requisição DELETE para /carrinhos/concluir-compra
     Then o sistema deve retornar status 401
+
+
+
+  # ==================================================
+  # DELETE /carrinhos/cancelar-compra - Cancelamento
+  # ==================================================
+
+
+  # CENÁRIOS - POSITIVOS
+
+
+  Scenario: Cancelar compra com sucesso e retornar produtos ao estoque
+    Given que estou autenticado com um usuário válido
+    And que possuo um carrinho ativo cadastrado
+    And que existem produtos reservados no carrinho
+    When envio uma requisição DELETE para /carrinhos/cancelar-compra
+    Then o sistema deve retornar status 200
+    And deve exibir a mensagem "Registro excluído com sucesso"
+    And os produtos devem retornar ao estoque
+    And o carrinho deve ser removido do sistema
+
+
+
+  # CENÁRIOS - NEGÓCIO
+
+
+  Scenario: Tentar cancelar compra sem possuir carrinho
+    Given que estou autenticado com um usuário sem carrinho ativo
+    When envio uma requisição DELETE para /carrinhos/cancelar-compra
+    Then o sistema deve retornar status 200
+    And deve exibir a mensagem "Não foi encontrado carrinho para esse usuário"
+
+
+
+  # CENÁRIOS - AUTORIZAÇÃO
+
+
+  Scenario: Não permitir cancelar compra sem token
+    Given que não possuo token de autenticação
+    When envio uma requisição DELETE para /carrinhos/cancelar-compra
+    Then o sistema deve retornar status 401
+
+
+  Scenario: Não permitir cancelar compra com token inválido
+    Given que possuo um token inválido
+    When envio uma requisição DELETE para /carrinhos/cancelar-compra
+    Then o sistema deve retornar status 401
+
+
+  Scenario: Não permitir cancelar compra com token expirado
+    Given que possuo um token expirado
+    When envio uma requisição DELETE para /carrinhos/cancelar-compra
+    Then o sistema deve retornar status 401
