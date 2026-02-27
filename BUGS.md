@@ -17,3 +17,25 @@
 - Qualquer quantidade de caracteres é aceita no campo senha.  
 - Não existe nenhuma validação mínima ou máxima, permitindo senhas muito curtas ou excessivamente longas.
 - permitindo senhas muito simples
+
+---
+
+### Bug: Validação de ID de usuário não documentada no endpoint GET /usuarios/{id}
+
+**Severidade:** Média  
+*(pode gerar confusão para consumidores da API, pois o comportamento não está documentado)*
+
+**Passos para reproduzir:**  
+1. Fazer uma requisição GET `/usuarios/{id}` com ID menor que 16 caracteres.  
+2. Observar que a API retorna `400` com mensagem de validação: "ID deve ter 16 caracteres".  
+3. Fazer uma requisição GET `/usuarios/{id}` com ID de 16 caracteres que não existe.  
+4. Observar que a API retorna `400` com mensagem: "usuário não encontrado".  
+
+**Comportamento esperado:**  
+- A documentação deveria informar que o ID do usuário deve ter **exatamente 16 caracteres**.  
+- Idealmente, a API deveria diferenciar claramente erros de validação de erros de “usuário não encontrado”.  
+
+**Comportamento atual:**  
+- O requisito de 16 caracteres fica subentendido apenas pelo exemplo (`0uxuPY0cbmQhpEz1`), não está documentado.  
+- IDs menores que 16 caracteres retornam `400` com mensagem de validação, mas não há aviso disso na documentação.  
+- IDs de 16 caracteres não existentes retornam `400` com mensagem "usuário não encontrado".
