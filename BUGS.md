@@ -3,10 +3,10 @@
 | Criticidade | Front-end | Back-end | Total |
 |-------------|------------|-----------|--------|
 | **Crítica** | 1 | 1 | 2 |
-| **Alta** | 6 | 1 | 7 |
-| **Média** | 2 | 2 | 4 |
+| **Alta** | 7 | 1 | 8 |
+| **Média** | 2 | 4 | 6 |
 | **Baixa** | 0 | 0 | 0 |
-| **Total** | 9 | 4 | 13 |
+| **Total** | 10 | 6| 16 |
 
 ---
 
@@ -417,6 +417,62 @@
 ### Passos para reproduzir
 
 1. Enviar nome com mais de 255 caracteres no cadastro.
+2. Concluir cadastro.
+
+---
+
+### Comportamento esperado
+
+- Sistema deve definir limite máximo.
+- Ao ultrapassar, retornar erro de validação.
+
+---
+
+### Comportamento atual
+
+- Campo aceita tamanho excessivo.
+- Nenhuma validação aplicada.
+
+---
+
+## 🟡 [Back-end] Bug: Campo "Nome" no cadastro de Produto não possui limite máximo de caracteres
+
+**Severidade:** Média  
+
+---
+
+### Passos para reproduzir
+
+1. Enviar nome com mais de 255 caracteres no cadastro.
+2. Concluir cadastro.
+
+---
+
+### Comportamento esperado
+
+- Sistema deve definir limite máximo.
+- Ao ultrapassar, retornar erro de validação.
+
+---
+
+### Comportamento atual
+
+- Campo aceita tamanho excessivo.
+- Nenhuma validação aplicada.
+
+---
+
+---
+
+## 🟡 [Back-end] Bug: Campo "Descrição" no cadastro de Produto não possui limite máximo de caracteres
+
+**Severidade:** Média  
+
+---
+
+### Passos para reproduzir
+
+1. Enviar Descrição com mais de 255 caracteres no cadastro.
 2. Concluir cadastro.
 
 ---
