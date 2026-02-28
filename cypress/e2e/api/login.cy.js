@@ -1,6 +1,8 @@
 import { loginFactory } from '../../factories/login.factory';
 import { loginService } from '../../services/login.service';
+import { deletarProdutosPorPrefixo } from '../../utils/deleteProdutos'
 import { deletarUsuariosPorPrefixo } from '../../utils/deleteUsuarios';
+import { deletarCarrinhosPorPrefixoUsuario } from '../../utils/deleteCarrinhos';
 
 describe('Autenticação de usuários - API', () => {
   let usuario;
@@ -12,7 +14,9 @@ describe('Autenticação de usuários - API', () => {
   });
 
   after(() => {
-      deletarUsuariosPorPrefixo('QA_User_');
+    deletarCarrinhosPorPrefixoUsuario('QA_User_');
+    deletarProdutosPorPrefixo('QA_Produto_');
+    deletarUsuariosPorPrefixo('QA_User_');
   });
 
   // ==================================================
@@ -26,6 +30,7 @@ describe('Autenticação de usuários - API', () => {
       expect(res.body.authorization).to.match(/^Bearer\s/);
     });
   });
+
   // ==================================================
   // NEGATIVOS - login com dados inválidos
   // ==================================================
@@ -115,4 +120,64 @@ describe('Autenticação de usuários - API', () => {
     });
   });
 
+  // ==================================================
+  // SCHEMA - POST /login
+  // ==================================================
+  describe('Validação de Schema - Login', () => {
+    it('Validar schema - Login com sucesso (200)', () => {
+      loginService
+        .realizarLogin({
+          email: usuario.email,
+          password: usuario.password
+        })
+        .then(res => {
+          expect(res.status).to.eq(200);
+
+          expect(res.body).to.be.an('object');
+
+          expect(res.body).to.have.property('message');
+          expect(res.body.message).to.be.a('string');
+          expect(res.body.message).to.eq('Login realizado com sucesso');
+
+          expect(res.body).to.have.property('authorization');
+          expect(res.body.authorization).to.be.a('string');
+
+          expect(res.body.authorization).to.match(/^Bearer\s.+/);
+
+          const token = res.body.authorization.replace('Bearer ', '');
+          expect(token.length).to.be.greaterThan(10);
+        });
+    });
+
+    it('Validar schema - Login inválido (401)', () => {
+      loginService
+        .realizarLogin({
+          email: 'inexistente@qa.com',
+          password: '123456'
+        })
+        .then(res => {
+          expect(res.status).to.eq(401);
+
+          expect(res.body).to.be.an('object');
+
+          expect(res.body).to.have.property('message');
+          expect(res.body.message).to.be.a('string');
+          expect(res.body.message).to.eq('Email e/ou senha inválidos');
+        });
+    });
+
+    it('Validar schema - Login com corpo inválido (400)', () => {
+      loginService
+        .realizarLogin({})
+        .then(res => {
+          expect(res.status).to.eq(400);
+
+          expect(res.body).to.be.an('object');
+
+          if (res.body.message) {
+            expect(res.body.message).to.be.a('string');
+          }
+        });
+    });
+  });
 });
