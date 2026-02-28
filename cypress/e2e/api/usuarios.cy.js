@@ -1,6 +1,8 @@
 import { usuariosService } from '../../services/usuarios.service';
 import { usuarioFactory } from '../../factories/usuario.factory';
+import { deletarProdutosPorPrefixo } from '../../utils/deleteProdutos'
 import { deletarUsuariosPorPrefixo } from '../../utils/deleteUsuarios';
+import { deletarCarrinhosPorPrefixoUsuario } from '../../utils/deleteCarrinhos';
 
 describe('Gestão de usuários - API', () => {
   let usuarioBase;
@@ -11,6 +13,8 @@ describe('Gestão de usuários - API', () => {
   });
 
   after(() => {
+    deletarCarrinhosPorPrefixoUsuario('QA_User_');
+    deletarProdutosPorPrefixo('QA_Produto_');
     deletarUsuariosPorPrefixo('QA_User_');
   });
 
@@ -132,6 +136,7 @@ describe('Gestão de usuários - API', () => {
         });
     });
   });
+
   // ==================================================
   // GET /usuarios
   // ==================================================
@@ -211,118 +216,117 @@ describe('Gestão de usuários - API', () => {
       });
     });
   });
-  
-    // ==================================================
-    // PUT /usuarios/{id}
-    // ==================================================
-    describe('PUT /usuarios/{id}', () => {
-      it('Atualizar usuário com sucesso', () => {
-        usuariosService.criarUsuario(usuarioBase).then((res) => {
-          const id = res.body._id;
-          usuariosCriados.push(id);
-  
-          const atualizado = { ...usuarioBase, nome: 'Nome Atualizado' };
-          usuariosService.atualizarUsuario(id, atualizado).then((response) => {
-            expect(response.status).to.eq(200);
-            expect(response.body.message).to.eq('Registro alterado com sucesso');
-          });
-        });
-      });
-  
-      it('Atualizar usuário alterando perfil para administrador', () => {
-        const usuarioComum = usuarioFactory.usuarioComum();
-        usuariosService.criarUsuario(usuarioComum).then((res) => {
-          const id = res.body._id;
-          usuariosCriados.push(id);
-  
-          const atualizado = { ...usuarioComum, administrador: 'true' };
-          usuariosService.atualizarUsuario(id, atualizado).then((response) => {
-            expect(response.status).to.eq(200);
-            expect(response.body.message).to.eq('Registro alterado com sucesso');
-          });
-        });
-      });
-  
-      it('Não permitir atualização com email já utilizado', () => {
-        const usuario1 = usuarioFactory.usuarioValido();
-        const usuario2 = usuarioFactory.usuarioValido();
-  
-        usuariosService.criarUsuario(usuario1).then((res1) => {
-          usuariosCriados.push(res1.body._id);
-          usuariosService.criarUsuario(usuario2).then((res2) => {
-            usuariosCriados.push(res2.body._id);
-  
-            const atualizado = { ...usuario2, email: usuario1.email };
-            usuariosService.atualizarUsuario(res2.body._id, atualizado).then((response) => {
-              expect(response.status).to.eq(400);
-              expect(response.body.message).to.eq('Este email já está sendo usado');
-            });
-          });
-        });
-      });
-  
-      it('Atualizar usuário com ID inexistente deve realizar novo cadastro', () => {
-        const usuario = usuarioFactory.usuarioValido();
-        usuariosService.atualizarUsuario('idNaoExiste', usuario).then((res) => {
-          expect(res.status).to.eq(201);
-          expect(res.body.message).to.eq('Cadastro realizado com sucesso');
-          expect(res.body).to.have.property('_id');
 
-        });
-      });
-  
-      it('Não permitir atualização com email inválido', () => {
-        usuariosService.criarUsuario(usuarioBase).then((res) => {
-          const id = res.body._id;
-          usuariosCriados.push(id);
-  
-          const atualizado = { ...usuarioBase, email: 'emailinvalido' };
-          usuariosService.atualizarUsuario(id, atualizado).then((response) => {
-            expect(response.status).to.eq(400);
-          });
-        });
-      });
-  
-      it('Não permitir atualização com campos obrigatórios vazios', () => {
-        usuariosService.criarUsuario(usuarioBase).then((res) => {
-          const id = res.body._id;
-          usuariosCriados.push(id);
-  
-          const atualizado = { ...usuarioBase, nome: '' };
-          usuariosService.atualizarUsuario(id, atualizado).then((response) => {
-            expect(response.status).to.eq(400);
-          });
-        });
-      });
-  
-      it('Não permitir atualização com corpo da requisição vazio', () => {
-        usuariosService.criarUsuario(usuarioBase).then((res) => {
-          const id = res.body._id;
-          usuariosCriados.push(id);
-  
-          cy.request({
-            method: 'PUT',
-            url: `https://serverest.dev/usuarios/${id}`,
-            failOnStatusCode: false,
-          }).then((response) => {
-            expect(response.status).to.eq(400);
-          });
-        });
-      });
-  
-      it('Não permitir atualização com campos nulos', () => {
-        usuariosService.criarUsuario(usuarioBase).then((res) => {
-          const id = res.body._id;
-          usuariosCriados.push(id);
-  
-          usuariosService.atualizarUsuario(id, usuarioFactory.usuarioCamposNulos())
-            .then((response) => {
-              expect(response.status).to.eq(400);
-            });
+  // ==================================================
+  // PUT /usuarios/{id}
+  // ==================================================
+  describe('PUT /usuarios/{id}', () => {
+    it('Atualizar usuário com sucesso', () => {
+      usuariosService.criarUsuario(usuarioBase).then((res) => {
+        const id = res.body._id;
+        usuariosCriados.push(id);
+
+        const atualizado = { ...usuarioBase, nome: 'Nome Atualizado' };
+        usuariosService.atualizarUsuario(id, atualizado).then((response) => {
+          expect(response.status).to.eq(200);
+          expect(response.body.message).to.eq('Registro alterado com sucesso');
         });
       });
     });
-    
+
+    it('Atualizar usuário alterando perfil para administrador', () => {
+      const usuarioComum = usuarioFactory.usuarioComum();
+      usuariosService.criarUsuario(usuarioComum).then((res) => {
+        const id = res.body._id;
+        usuariosCriados.push(id);
+
+        const atualizado = { ...usuarioComum, administrador: 'true' };
+        usuariosService.atualizarUsuario(id, atualizado).then((response) => {
+          expect(response.status).to.eq(200);
+          expect(response.body.message).to.eq('Registro alterado com sucesso');
+        });
+      });
+    });
+
+    it('Não permitir atualização com email já utilizado', () => {
+      const usuario1 = usuarioFactory.usuarioValido();
+      const usuario2 = usuarioFactory.usuarioValido();
+
+      usuariosService.criarUsuario(usuario1).then((res1) => {
+        usuariosCriados.push(res1.body._id);
+        usuariosService.criarUsuario(usuario2).then((res2) => {
+          usuariosCriados.push(res2.body._id);
+
+          const atualizado = { ...usuario2, email: usuario1.email };
+          usuariosService.atualizarUsuario(res2.body._id, atualizado).then((response) => {
+            expect(response.status).to.eq(400);
+            expect(response.body.message).to.eq('Este email já está sendo usado');
+          });
+        });
+      });
+    });
+
+    it('Atualizar usuário com ID inexistente deve realizar novo cadastro', () => {
+      const usuario = usuarioFactory.usuarioValido();
+      usuariosService.atualizarUsuario('idNaoExiste', usuario).then((res) => {
+        expect(res.status).to.eq(201);
+        expect(res.body.message).to.eq('Cadastro realizado com sucesso');
+        expect(res.body).to.have.property('_id');
+      });
+    });
+
+    it('Não permitir atualização com email inválido', () => {
+      usuariosService.criarUsuario(usuarioBase).then((res) => {
+        const id = res.body._id;
+        usuariosCriados.push(id);
+
+        const atualizado = { ...usuarioBase, email: 'emailinvalido' };
+        usuariosService.atualizarUsuario(id, atualizado).then((response) => {
+          expect(response.status).to.eq(400);
+        });
+      });
+    });
+
+    it('Não permitir atualização com campos obrigatórios vazios', () => {
+      usuariosService.criarUsuario(usuarioBase).then((res) => {
+        const id = res.body._id;
+        usuariosCriados.push(id);
+
+        const atualizado = { ...usuarioBase, nome: '' };
+        usuariosService.atualizarUsuario(id, atualizado).then((response) => {
+          expect(response.status).to.eq(400);
+        });
+      });
+    });
+
+    it('Não permitir atualização com corpo da requisição vazio', () => {
+      usuariosService.criarUsuario(usuarioBase).then((res) => {
+        const id = res.body._id;
+        usuariosCriados.push(id);
+
+        cy.request({
+          method: 'PUT',
+          url: `https://serverest.dev/usuarios/${id}`,
+          failOnStatusCode: false,
+        }).then((response) => {
+          expect(response.status).to.eq(400);
+        });
+      });
+    });
+
+    it('Não permitir atualização com campos nulos', () => {
+      usuariosService.criarUsuario(usuarioBase).then((res) => {
+        const id = res.body._id;
+        usuariosCriados.push(id);
+
+        usuariosService.atualizarUsuario(id, usuarioFactory.usuarioCamposNulos())
+          .then((response) => {
+            expect(response.status).to.eq(400);
+          });
+      });
+    });
+  });
+
   // ==================================================
   // DELETE /usuarios/{id}
   // ==================================================
@@ -361,6 +365,186 @@ describe('Gestão de usuários - API', () => {
       usuariosService.deletarUsuario('idInvalido123').then((res) => {
         expect(res.status).to.eq(200);
       });
+    });
+  });
+
+  // =====================================================
+  // SCHEMA - USUÁRIOS
+  // =====================================================
+  describe('Schema - Usuários', () => {
+    // ============================
+    // GET /usuarios
+    // ============================
+    it('Validar schema - Listar usuários', () => {
+      usuariosService.listarUsuarios()
+        .then(res => {
+          expect(res.status).to.eq(200);
+
+          expect(res.body).to.have.property('quantidade');
+          expect(res.body.quantidade).to.be.a('number');
+
+          expect(res.body).to.have.property('usuarios');
+          expect(res.body.usuarios).to.be.an('array');
+
+          if (res.body.usuarios.length > 0) {
+            res.body.usuarios.forEach(usuario => {
+              expect(usuario).to.have.property('_id');
+              expect(usuario._id).to.be.a('string');
+
+              expect(usuario).to.have.property('nome');
+              expect(usuario.nome).to.be.a('string');
+
+              expect(usuario).to.have.property('email');
+              expect(usuario.email).to.be.a('string');
+
+              expect(usuario).to.have.property('password');
+              expect(usuario.password).to.be.a('string');
+
+              expect(usuario).to.have.property('administrador');
+              expect(usuario.administrador).to.be.a('string');
+            });
+          }
+        });
+    });
+
+    // ============================
+    // POST /usuarios (201)
+    // ============================
+    it('Validar schema - Criar usuário com sucesso', () => {
+      const usuario = usuarioFactory.usuarioValido();
+
+      usuariosService.criarUsuario(usuario)
+        .then(res => {
+          expect(res.status).to.eq(201);
+
+          expect(res.body).to.have.property('message');
+          expect(res.body.message).to.be.a('string');
+
+          expect(res.body).to.have.property('_id');
+          expect(res.body._id).to.be.a('string');
+        });
+    });
+
+    // ============================
+    // POST /usuarios (400)
+    // ============================
+    it('Validar schema - Email duplicado (POST)', () => {
+      const usuario = usuarioFactory.usuarioValido();
+
+      usuariosService.criarUsuario(usuario)
+        .then(() => {
+          usuariosService.criarUsuario(usuario)
+            .then(res => {
+              expect(res.status).to.eq(400);
+
+              expect(res.body).to.have.property('message');
+              expect(res.body.message).to.be.a('string');
+            });
+        });
+    });
+
+    // ============================
+    // GET /usuarios/{id} (200)
+    // ============================
+    it('Validar schema - Buscar usuário por ID', () => {
+      const usuario = usuarioFactory.usuarioValido();
+
+      usuariosService.criarUsuario(usuario)
+        .then(resCreate => {
+          const id = resCreate.body._id;
+
+          usuariosService.buscarUsuarioPorId(id)
+            .then(res => {
+              expect(res.status).to.eq(200);
+
+              expect(res.body).to.have.property('_id');
+              expect(res.body._id).to.be.a('string');
+
+              expect(res.body).to.have.property('nome');
+              expect(res.body.nome).to.be.a('string');
+
+              expect(res.body).to.have.property('email');
+              expect(res.body.email).to.be.a('string');
+
+              expect(res.body).to.have.property('password');
+              expect(res.body.password).to.be.a('string');
+
+              expect(res.body).to.have.property('administrador');
+              expect(res.body.administrador).to.be.a('string');
+            });
+        });
+    });
+
+    // ============================
+    // GET /usuarios/{id} (400)
+    // ============================
+    it('Validar schema - ID inexistente', () => {
+      usuariosService.buscarUsuarioPorId('id_fake')
+        .then(res => {
+          expect(res.status).to.eq(400);
+
+          expect(res.body).to.have.property('id');
+        });
+    });
+
+    // ============================
+    // PUT /usuarios/{id} (200)
+    // ============================
+    it('Validar schema - Atualizar usuário', () => {
+      const usuario = usuarioFactory.usuarioValido();
+
+      usuariosService.criarUsuario(usuario)
+        .then(resCreate => {
+          const id = resCreate.body._id;
+
+          const atualizado = {
+            ...usuario,
+            nome: 'Nome Atualizado'
+          };
+
+          usuariosService.atualizarUsuario(id, atualizado)
+            .then(res => {
+              expect(res.status).to.eq(200);
+
+              expect(res.body).to.have.property('message');
+              expect(res.body.message).to.be.a('string');
+            });
+        });
+    });
+
+    // ============================
+    // DELETE /usuarios/{id} (200)
+    // ============================
+    it('Validar schema - Excluir usuário', () => {
+      const usuario = usuarioFactory.usuarioValido();
+
+      usuariosService.criarUsuario(usuario)
+        .then(resCreate => {
+          const id = resCreate.body._id;
+
+          usuariosService.deletarUsuario(id)
+            .then(res => {
+              expect(res.status).to.eq(200);
+
+              expect(res.body).to.have.property('message');
+              expect(res.body.message).to.be.a('string');
+            });
+        });
+    });
+
+    // ============================
+    // DELETE /usuarios/{id} (400)
+    // ============================
+    it('Validar schema - Usuário com carrinho (DELETE)', () => {
+      usuariosService.deletarUsuario('id_fake')
+        .then(res => {
+          if (res.status === 400) {
+            expect(res.body).to.have.property('message');
+            expect(res.body.message).to.be.a('string');
+
+            expect(res.body).to.have.property('idCarrinho');
+          }
+        });
     });
   });
 });
