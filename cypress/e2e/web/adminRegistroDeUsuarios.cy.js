@@ -1,7 +1,7 @@
 import LoginPage from "../../pages/loginPage"
 import CadastroPage from "../../pages/cadastroPage"
 import AdminHomePage from "../../pages/adminHomePage"
-import AdminRegistroDeUsuarioPage from "../../pages/adminRegistroDeUsuarioPage"
+import AdminRegistroDeUsuarioPage from "../../pages/adminRegistroDeUsuariosPage"
 import AdminListaDeUsuariosPage from "../../pages/adminListaDeUsuariosPage"
 import { gerarNovoUsuario } from "../../utils/generateNovoUsuario"
 import { deletarUsuariosPorPrefixo } from '../../utils/deleteUsuarios'
