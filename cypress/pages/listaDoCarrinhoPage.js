@@ -9,7 +9,9 @@ class ListaDoCarrinhoPage {
       adicionarCarrinhoButton: () => cy.get('[data-testid="adicionar carrinho"]'),
       limparListaButton: () => cy.get('[data-testid="limparLista"]'),
       diminuirQuantidadeButtons: () => cy.get('[data-testid="product-decrease-quantity"]'),
-      aumentarQuantidadeButtons: () => cy.get('[data-testid="product-increase-quantity"]')
+      aumentarQuantidadeButtons: () => cy.get('[data-testid="product-increase-quantity"]'),
+      nomeDoProduto: () => cy.get('[data-testid="shopping-cart-product-name"]')
+      
     }
   
   

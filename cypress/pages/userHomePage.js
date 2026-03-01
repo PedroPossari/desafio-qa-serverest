@@ -44,6 +44,10 @@ class UserHomePage {
     adicionarPrimeiroProdutoNaLista() {
       this.elements.adicionarNaListaButtons().first().click()
     }
+
+    adicionarUltimoProdutoNaLista() {
+      this.elements.adicionarNaListaButtons().last().click()
+    }
   
     acessarPrimeiroProduto() {
       this.elements.productDetailLinks().first().click()
