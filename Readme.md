@@ -34,6 +34,34 @@ Foram priorizados:
 
 ---
 
+## 📐 Estratégia Baseada na Pirâmide de Testes
+
+Este projeto foi estruturado seguindo o conceito da Pirâmide de Testes, priorizando 
+testes de integração e API como base principal da estratégia.
+
+### Testes de Integração / API
+A maior parte da cobertura foi concentrada na camada de API, com foco em:
+
+- Validação das regras de negócio
+- Validação dos status codes
+- Validação do contrato de resposta
+- Testes de duplicidade e dados inválidos
+- Regras descritas na documentação da API
+
+Essa abordagem garante maior confiabilidade, rapidez de execução e detecção precoce de falhas.
+
+### Testes End-to-End (Web)
+Os testes E2E foram direcionados principalmente para:
+
+- Validação dos fluxos críticos do usuário
+- Simulação de cenários reais
+- Verificação da integração entre front-end e back-end
+
+O foco foi validar o comportamento do sistema como um todo, evitando excesso de cenários 
+na camada de interface.
+
+---
+
 ## 🛠️ Tecnologias Utilizadas
 
 - Cypress
@@ -48,41 +76,89 @@ Foram priorizados:
 
 A estrutura do projeto foi organizada de forma modular, separando responsabilidades por camadas:
 ```bash
-desafio-qa-serverest/
-│
-├── README.md
-├── BUGS.md
-├── package.json
-├── cypress.config.js
-│
-├── bdd/
-│   └── cadastro.feature
-│
-└── cypress/
-    ├── e2e/
-    │ ├── web/
-    │ │ └── cadastro.cy.js
-    │ └── api/
-    │   └── clientes.cy.js
-    │
-    ├── pages/
-    │   └── CadastroPage.js
-    │
-    ├── services/
-    │   └── clientesService.js
-    │
-    ├── fixtures/
-    │   └── user.json
-    │
-    ├── factories/
-    │   └── userFactory.js
-    │
-    ├── utils/
-    │   └── helpers.js
-    │
-    └── support/
-        ├── commands.js
-        └── e2e.js
+└── 📁desafio-qa-serverest
+    └── 📁bdd
+        └── 📁api
+            ├── carrinhos.feature
+            ├── login.feature
+            ├── produtos.feature
+            ├── usuario.feature
+        └── 📁web
+            ├── adminHome.feature
+            ├── adminListaDeProdutos.feature
+            ├── adminListaDeUsuarios.feature
+            ├── adminRegistroDeProdutos.feature
+            ├── adminRegistroDeUsuarios.feature
+            ├── cadastro.feature
+            ├── listaDoCarrinho.feature
+            ├── login.feature
+            ├── produto.feature
+            ├── usuarioHome.feature
+    └── 📁cypress
+        └── 📁e2e
+            └── 📁api
+                ├── carrinhos.cy.js
+                ├── login.cy.js
+                ├── produtos.cy.js
+                ├── usuarios.cy.js
+            └── 📁web
+                ├── adminHome.cy.js
+                ├── adminListaDeProdutos.cy.js
+                ├── adminListaDeUsuarios.cy.js
+                ├── adminRegistroDeProdutos.cy.js
+                ├── adminRegistroDeUsuarios.cy.js
+                ├── cadastro.cy.js
+                ├── listaDoCarrinho.cy.js
+                ├── login.cy.js
+                ├── produto.cy.js
+                ├── usuarioHome.cy.js
+        └── 📁factories
+            ├── carrinho.factory.js
+            ├── login.factory.js
+            ├── produto.factory.js
+            ├── usuario.factory.js
+        └── 📁fixtures
+            ├── example.json
+        └── 📁pages
+            ├── adminHomePage.js
+            ├── adminListaDeProdutosPage.js
+            ├── adminListaDeUsuariosPage.js
+            ├── adminNavbarPage.js
+            ├── adminRegistroDeProdutosPage.js
+            ├── adminRegistroDeUsuariosPage.js
+            ├── cadastroPage.js
+            ├── listaDoCarrinhoPage.js
+            ├── loginPage.js
+            ├── produtoPage.js
+            ├── userHomePage.js
+            ├── userNavbarPage.js
+        └── 📁services
+            ├── carrinhos.service.js
+            ├── login.service.js
+            ├── produtos.service.js
+            ├── usuarios.service.js
+        └── 📁support
+            ├── commands.js
+            ├── e2e.js
+        └── 📁utils
+            ├── deleteCarrinhos.js
+            ├── deleteProdutos.js
+            ├── deleteUsuarios.js
+            ├── generateAuthTokens.js
+            ├── generateCarrinho.js
+            ├── generateEmail.js
+            ├── generateName.js
+            ├── generateNovoUsuario.js
+            ├── generatePassword.js
+            ├── generateProduto.js
+    └── 📁img
+        ├── image.png
+    ├── .gitignore
+    ├── BUGS.md
+    ├── cypress.config.js
+    ├── package-lock.json
+    ├── package.json
+    └── Readme.md
 ```
 
 Essa arquitetura visa facilitar a manutenção, escalabilidade e reutilização de código.
@@ -117,7 +193,7 @@ Contém os testes automatizados da API.
 Valida os endpoints de cadastro e consulta de usuários.
 
 Exemplo:
-- `clientes.cy.js`
+- `usuarios.cy.js`
 
 ---
 
@@ -131,7 +207,7 @@ Responsável por centralizar:
 - Interações com a interface
 
 Exemplo:
-- `CadastroPage.js`
+- `cadastroPage.js`
 
 ---
 
@@ -141,7 +217,7 @@ Camada responsável por centralizar as requisições à API.
 Evita duplicação de código nos testes.
 
 Exemplo:
-- `clientesService.js`
+- `usuarios.service.js`
 
 ---
 
@@ -232,6 +308,23 @@ Executar Testes em Modo Headless
 npx cypress run
 ```
 ---
+## 📈 Resultados da Execução dos Testes
+
+Abaixo está o resultado da execução completa da suíte de testes em modo headless:
+
+- Total de testes: 163
+- Testes aprovados: 161
+- Testes falhados: 2
+
+Os testes com falha estão relacionados a comportamentos inconsistentes da API, 
+que foram devidamente documentados no arquivo BUGS.md.
+
+Essa execução demonstra a estabilidade da suíte e a confiabilidade dos cenários implementados.
+
+!![Resultado da Execução dos Testes](./img/image.png)
+
+---
+
 ## 🐞 Registro de Bugs
 
 Os bugs identificados durante a execução dos testes estão documentados no arquivo:
