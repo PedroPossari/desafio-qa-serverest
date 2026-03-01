@@ -41,14 +41,27 @@ class AdminListaDeUsuariosPage {
         .click()
     }
   
-    clicarPrimeiroEditar() {
-      this.clicarEditarPorIndex(0)
+    clicarEditarPorNome(nome) {
+      cy.contains('td', nome)
+        .parent('tr')
+        .within(() => {
+          cy.contains('button', 'Editar').click()
+        })
     }
-  
-    clicarPrimeiroExcluir() {
-      this.clicarExcluirPorIndex(0)
+    
+    clicarExcluirPorNome(nome) {
+      cy.contains('td', nome)
+        .parent('tr')
+        .within(() => {
+          cy.contains('button', 'Excluir').click()
+        })
     }
-  
+    
+    encontrarUsuarioPorNome(nome, email) {
+      cy.contains(nome).scrollIntoView()
+      cy.contains(email).scrollIntoView()
+    }
+    
   }
   
   export default new AdminListaDeUsuariosPage()
