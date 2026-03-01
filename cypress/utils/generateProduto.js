@@ -1,7 +1,7 @@
 import { gerarAuthTokens } from './generateAuthTokens';
 import { produtosService } from '../services/produtos.service';
 
-function gerarNovoProduto() {
+export function gerarNovoProduto() {
   return {
     nome: `QA_Produto_${Date.now()}`,
     preco: 100,
