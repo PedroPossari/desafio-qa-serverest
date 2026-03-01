@@ -7,7 +7,7 @@ class UserHomePage {
     elements = {
       campoPesquisa: () => cy.get('[data-testid="pesquisar"]'),
       botaoPesquisar: () => cy.get('[data-testid="botaoPesquisar"]'),
-      verCarrinhoButton: () => cy.get('[data-testid="listaProdutos"]'),
+      verCarrinhoButton: () => cy.get('svg[viewBox="0 0 576 512"]'),
       adicionarNaListaButtons: () => cy.get('[data-testid="adicionarNaLista"]'),
       productDetailLinks: () => cy.get('[data-testid="product-detail-link"]')
 
